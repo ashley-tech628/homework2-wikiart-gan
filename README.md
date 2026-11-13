@@ -32,7 +32,7 @@ The Kaggle per-file endpoint returned persistent 404 responses after 126 downloa
 - `plot_losses.py`: make the training-loss figure.
 - `results/`: recorded metrics, config, losses, sample grid, plot, provenance.
 
-## Run locally or on DataHub
+## Run locally
 
 Python 3.13 is recommended for `pytorch-ignite==0.5.4`. For an NVIDIA GPU, install the CUDA build of PyTorch appropriate for the host using the [official selector](https://pytorch.org/get-started/locally/), then install the remaining requirements. The recorded Windows run used a Python 3.14 environment with `pip --ignore-requires-python` for Ignite; its functions were validated in that environment.
 
@@ -41,6 +41,22 @@ python -m venv .venv
 source .venv/bin/activate                    # Windows: .venv\Scripts\activate
 python -m pip install -r requirements.txt
 ```
+
+### UCSD DataHub
+
+UCSD's `scipy-ml-notebook` GPU image already provides CUDA and PyTorch. **Do not install the full `requirements.txt` into DataHub's home directory:** that can download another multi-gigabyte CUDA/PyTorch stack and exhaust the course storage quota. After unpacking the supplied DataHub ZIP, first check the existing environment:
+
+```bash
+python -c "import torch, torchvision, scipy, matplotlib, PIL; print(torch.__version__, torch.cuda.is_available())"
+```
+
+If this succeeds and prints `True`, install only Ignite if it is missing:
+
+```bash
+python -c "import ignite; print(ignite.__version__)" || python -m pip install --user --no-cache-dir --no-deps pytorch-ignite==0.5.4
+```
+
+The supplied DataHub ZIP includes the 2,390 prepared images at `data/images`, so no data download or `pyarrow` install is needed for that run. If an import fails, inspect the installed package versions and paths before replacing the platform's GPU-enabled PyTorch.
 
 To use the assigned Kaggle source directly:
 
