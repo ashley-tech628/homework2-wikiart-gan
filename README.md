@@ -42,6 +42,8 @@ The [Kaggle notebook](kaggle_homework2.ipynb) embeds all required Python scripts
 
 The notebook randomly selects 2,390 decodable images from the mounted Kaggle dataset using seed 2026, writes image-level provenance to `data/images/kaggle_provenance.json`, trains for 40 epochs, evaluates 400 held-out images, and writes the generator, metrics, sample grids, losses, and figures under `/kaggle/working/homework2-wikiart-gan/`. This is a new run on the assigned source; its metrics should be recorded separately from the mixed-source local and DataHub runs. Kaggle saves `/kaggle/working` output files with a completed notebook version. The notebook checks CUDA before starting and installs only Ignite if needed, leaving the preinstalled GPU-enabled PyTorch in place.
 
+Before training, the notebook downloads and caches the Inception-v3 evaluation weights. This gives a clear early error when Kaggle Internet is disabled; it does not affect the GAN training weights.
+
 Kaggle may mount datasets under `/kaggle/input/datasets/<owner>/<dataset>/...`. The preparation script searches recursively for the `Abstract_Expressionism` style directory, so it works with this deeper mount layout.
 
 On DataHub, the 40-epoch run currently lives in `/tmp/homework2-run`. Copy the model weights and final artifacts into the persistent project directory before the container ends, then download an archive from JupyterLab:
