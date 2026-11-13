@@ -50,7 +50,15 @@ UCSD's `scipy-ml-notebook` GPU image already provides CUDA and PyTorch. **Do not
 python -c "import torch, torchvision, scipy, matplotlib, PIL; print(torch.__version__, torch.cuda.is_available())"
 ```
 
-If this succeeds and prints `True`, install only Ignite if it is missing:
+`torch.cuda.is_available()` only confirms that a GPU is visible. Before a full run, verify that PyTorch actually has kernels for the allocated card:
+
+```bash
+python -c "import torch; print(torch.__version__, torch.version.cuda, torch.cuda.get_arch_list()); print(torch.ones(1, device='cuda'))"
+```
+
+The Fall 2026 UCSD image observed on an RTX PRO 6000 Blackwell (`sm_120`) had PyTorch 2.2.1 + CUDA 12.1 and failed this kernel check. That image can run on an older compatible GPU, but [Blackwell requires a newer PyTorch CUDA build](https://discuss.pytorch.org/t/rtx-5050-sm-120-support-timeline-when-in-stable-pytorch/224288/4) (at least PyTorch 2.7 with CUDA 12.8). A compatible build should be installed in a temporary environment or supplied by an updated image; the older system installation should not be replaced in the quota-limited home directory.
+
+If the CUDA operation succeeds, install only Ignite if it is missing:
 
 ```bash
 python -c "import ignite; print(ignite.__version__)" || python -m pip install --user --no-cache-dir --no-deps pytorch-ignite==0.5.4
