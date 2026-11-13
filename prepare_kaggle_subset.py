@@ -12,9 +12,7 @@ EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 
 
 def locate_source(input_root):
-    matches = list(input_root.glob("*/Abstract_Expressionism"))
-    if not matches:
-        matches = list(input_root.glob("*/*/Abstract_Expressionism"))
+    matches = [path for path in input_root.rglob("Abstract_Expressionism") if path.is_dir()]
     if len(matches) != 1:
         raise FileNotFoundError(
             f"Expected one mounted WikiArt dataset with an Abstract_Expressionism folder under {input_root}; "
