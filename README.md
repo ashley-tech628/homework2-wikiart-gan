@@ -21,6 +21,8 @@ This repository contains a reproducible 64 × 64 painting-generation experiment:
 
 The Kaggle per-file endpoint returned persistent 404 responses after 126 downloads. We used a public WikiArt mirror to complete this run and recorded image-level provenance in `results/provenance.json`. The mirror is not asserted to be byte-identical to the assigned Kaggle version. This limits direct comparison to experiments using that exact upload.
 
+The separate DataHub run completed 40 epochs and evaluated 400 held-out images: pool3 FID **147.3517**, Ignite blog-default FID **0.08746**, and IS **1.53699**. Its metrics were copied from the user's terminal output into `results/datahub_metrics.json`; the remaining DataHub artifacts must be downloaded from DataHub before they can be included in this repository.
+
 ## Repository contents
 
 - `gan.py`: generator, discriminator, and initialization.
