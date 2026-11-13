@@ -30,7 +30,37 @@ The Kaggle per-file endpoint returned persistent 404 responses after 126 downloa
 - `evaluate.py`: IS and FID using [PyTorch-Ignite's GAN evaluation approach](https://pytorch-ignite.ai/blog/gan-evaluation-with-fid-and-is/).
 - `sample.py`: generate new paintings from `model/generator.pt`.
 - `plot_losses.py`: make the training-loss figure.
+- `prepare_kaggle_subset.py`: prepare a seeded subset from the attached Kaggle WikiArt upload.
+- `kaggle_homework2.ipynb`: self-contained Kaggle notebook with the project code embedded.
 - `results/`: recorded metrics, config, losses, sample grid, plot, provenance.
+
+## Run on Kaggle with the assigned dataset
+
+The [Kaggle notebook](kaggle_homework2.ipynb) embeds all required Python scripts, so the repository does not need to be cloned inside Kaggle. Create a new Kaggle Notebook and import `kaggle_homework2.ipynb` through the editor's **File > Import Notebook** command. In the **Input** pane, attach [steubk/wikiart](https://www.kaggle.com/datasets/steubk/wikiart). In **Session options**, select a GPU accelerator and enable Internet. Run the notebook from the first cell, or choose **Save Version > Save & Run All** for a saved version with outputs.
+
+The notebook randomly selects 2,390 decodable images from the mounted Kaggle dataset using seed 2026, writes image-level provenance to `data/images/kaggle_provenance.json`, trains for 40 epochs, evaluates 400 held-out images, and writes the generator, metrics, sample grids, losses, and figures under `/kaggle/working/homework2-wikiart-gan/`. This is a new run on the assigned source; its metrics should be recorded separately from the mixed-source local and DataHub runs. Kaggle saves `/kaggle/working` output files with a completed notebook version. The notebook checks CUDA before starting and installs only Ignite if needed, leaving the preinstalled GPU-enabled PyTorch in place.
+
+On DataHub, the 40-epoch run currently lives in `/tmp/homework2-run`. Copy the model weights and final artifacts into the persistent project directory before the container ends, then download an archive from JupyterLab:
+
+```bash
+cd ~/homework2-wikiart-gan
+source /tmp/homework2-venv/bin/activate
+mkdir -p model results
+python - <<'PY'
+import torch
+from pathlib import Path
+s = torch.load('/tmp/homework2-run/checkpoint.pt', map_location='cpu', weights_only=False)
+torch.save({'generator': s['generator'], 'latent_dim': s['config']['latent_dim'],
+            'width': s['config']['width'], 'epoch': s['epoch']},
+           Path('model/datahub_generator.pt'))
+PY
+cp /tmp/homework2-run/metrics.json results/datahub_metrics.json
+cp /tmp/homework2-run/config.json results/datahub_config.json
+cp /tmp/homework2-run/losses.csv results/datahub_losses.csv
+cp /tmp/homework2-run/loss_curves.png results/datahub_loss_curves.png
+cp /tmp/homework2-run/samples_epoch_40.png results/datahub_generated_grid.png
+python -m zipfile -c datahub-results.zip results/datahub_metrics.json results/datahub_config.json results/datahub_losses.csv results/datahub_loss_curves.png results/datahub_generated_grid.png model/datahub_generator.pt
+```
 
 ## Run locally
 
