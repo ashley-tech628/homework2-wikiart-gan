@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.venv/
+data/
+*.zip
+*.pt
+!model/generator.pt
+checkpoints/
