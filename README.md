@@ -23,6 +23,8 @@ The Kaggle per-file endpoint returned persistent 404 responses after 126 downloa
 
 The separate DataHub run completed 40 epochs and evaluated 400 held-out images: pool3 FID **147.3517**, Ignite blog-default FID **0.08746**, and IS **1.53699**. Its metrics were copied from the user's terminal output into `results/datahub_metrics.json`; the remaining DataHub artifacts must be downloaded from DataHub before they can be included in this repository.
 
+The Kaggle run on the assigned `steubk/wikiart` upload prepared a seeded 2,390-image subset and completed 40 epochs on a Tesla T4. Its 400-image held-out evaluation returned pool3 FID **158.5913**, Ignite blog-default FID **0.12410**, and IS **1.71503**. The downloaded executed notebook is `kaggle_completed.ipynb`; its embedded figures and printed metrics were extracted into `results/kaggle_generated_grid.png`, `results/kaggle_loss_curves.png`, and `results/kaggle_metrics.json`. The notebook download does not contain the binary model, checkpoint, raw loss CSV, config JSON, or provenance JSON as standalone files; retrieve those separately from Kaggle's `/kaggle/working/homework2-wikiart-gan/` outputs if needed.
+
 ## Repository contents
 
 - `gan.py`: generator, discriminator, and initialization.

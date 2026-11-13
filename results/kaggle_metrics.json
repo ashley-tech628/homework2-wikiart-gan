@@ -1,0 +1,11 @@
+{
+  "fid_pool3": 158.59134364147644,
+  "fid_ignite_blog_default": 0.12409636673807171,
+  "inception_score": 1.7150250828487832,
+  "real_images": 400,
+  "generated_images": 400,
+  "checkpoint_epoch": 40,
+  "metric_library": "pytorch-ignite",
+  "resize": "bilinear antialias to 299x299",
+  "real_split": "held-out 20%"
+}
