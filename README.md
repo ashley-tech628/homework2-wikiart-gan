@@ -1,6 +1,18 @@
 # Homework 2 — WikiArt painting GAN
 
-This repository contains a reproducible 64 × 64 painting-generation experiment: data preparation, GAN training, sampling, loss curves, Inception Score (IS), two FID configurations, and model weights. The report is intentionally deferred.
+This repository contains the completed 2,390-image, 64 × 64 baseline and a new full-dataset, 128 × 128 training pipeline. The full-dataset experiment has **not yet been run to completion**. The report awaits its measured results.
+
+## Full WikiArt experiment (new)
+
+Use [kaggle_full_wikiart_gan.ipynb](kaggle_full_wikiart_gan.ipynb) in Kaggle. Import it through **File → Import Notebook**, attach the assigned [steubk/wikiart](https://www.kaggle.com/datasets/steubk/wikiart) dataset in **Add Input**, enable a GPU and Internet in Session options, then run cells in order or choose **Save Version → Save & Run All**. This notebook contains its Python scripts, so cloning the repository inside Kaggle is unnecessary.
+
+The new `full_wikiart/prepare.py` uses every decodable image in all 27 style folders. It center crops each source image to 128 × 128, records image-level provenance and skipped corrupt files, and verifies that at least 50,000 images were prepared. It does not randomly select a 2,390-image subset. Prepared pixels are temporary; source images remain in the attached Kaggle dataset. A seeded 90/10 split leaves real images out of training for evaluation.
+
+`full_wikiart/train.py` trains a 128 × 128 style-conditional convolutional generator and projection discriminator with spectral normalization, hinge loss, Adam, mixed precision, and an exponential moving average (EMA) generator. It saves losses, sample grids, and a resumable checkpoint after every epoch. The default target is 40 epochs, batch size 64, latent dimension 128. The notebook stops after about eight hours of training in each session; if it stops before 40 epochs, save the version, attach that version's output to a new notebook session, and set `RESUME_CHECKPOINT` to its `run/checkpoint.pt` path. The `checkpoint_epoch` in `run/metrics.json` tells you how much training actually completed.
+
+`full_wikiart/evaluate.py` measures Inception Score and FID on up to 1,000 held-out real images and 1,000 images from the EMA generator, with matching style labels. It writes both standard pool3 FID and the Ignite blog's default FID; those two FID numbers use different feature spaces and cannot be compared numerically. The notebook packages checkpoint, metrics, losses, and generated examples in `full_run_artifacts.zip`, and saves `full_provenance.json` separately. Upload both files here after the Kaggle run so the results and image quality can be checked before writing the report.
+
+The architecture is designed to use more training data and pixels than the baseline, but visual sharpness and FID can only be assessed after training. A partial run or a 10-step smoke test is not evidence of improvement.
 
 ## Recorded run
 
