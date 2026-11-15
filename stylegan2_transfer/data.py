@@ -16,6 +16,8 @@ def locate_source(root):
     if (root / 'Abstract_Expressionism').is_dir():
         return root
     matches = [p.parent for p in root.rglob('Abstract_Expressionism') if p.is_dir()]
+    if not matches:
+        raise FileNotFoundError(f'WikiArt data not downloaded yet: {root}')
     if len(matches) != 1:
         raise ValueError(f'Expected one WikiArt dataset below {root}; found {len(matches)}')
     return matches[0]

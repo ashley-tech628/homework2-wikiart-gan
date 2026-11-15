@@ -14,3 +14,5 @@ Executed checks:
 7. Checked Python compilation and Bash syntax parsing; package ZIP is checked for CRC errors and excludes caches, datasets and model weights. Download/convert code and pinned upstream source are included.
 
 Meaningful limits: this validates an actual train/evaluate/resume path and the pretrained model's visible capability. It does not establish that full-data fine-tuning will improve FID or guarantee sharp output for every seed. Full-data training and final metrics remain to be run on DataHub. The public model may have seen images from the later validation/test splits. All report claims must preserve that distinction.
+
+Regression fix: an empty raw-data directory raises FileNotFoundError, which the downloader catches to start downloading. Four fixture tests passed: fresh-directory download invocation, incomplete-download retry, direct-root discovery and rejection of ambiguous duplicate datasets. Network transfers are mocked in these tests.
