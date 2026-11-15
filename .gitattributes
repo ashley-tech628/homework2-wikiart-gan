@@ -1,3 +1,4 @@
 *.pdf -text
 *.png -text
 *.pt -text
+*.sh text eol=lf

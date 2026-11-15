@@ -1,0 +1,16 @@
+# Delivery validation and limits
+
+Environment: Windows, Python 3.14, PyTorch 2.10.0+cu130, NVIDIA RTX 5070 Laptop GPU (8 GiB). The target is Linux DataHub / Python 3.11 / Blackwell 24 GiB. The Linux wrapper was parsed with bashlex; Windows sandbox restrictions prevented invoking an actual Bash runtime. The full DataHub execution has not been remotely tested.
+
+Executed checks:
+
+1. Downloaded the original 381,615,715-byte WikiArt_Uncond2 checkpoint, verified the archive-provided SHA-1, and converted its EMA generator and discriminator with NVIDIA's converter. Only an allowlisted legacy array/container unpickler is used by the delivered converter. The resulting checkpoint loads with `torch.load(weights_only=True)`.
+2. Generated actual native 1024px images using the full pretrained network. Compared truncating the network at 256/512: those incomplete networks lost important RGB contributions. They were rejected; the delivered model retains the full network. Preview images are explicitly public-pretraining outputs, not evidence of the user's fine-tuning results.
+3. Ran generator and discriminator backward passes, R1 double backward and path-length double backward. All checked gradients were finite. Native fp16 regularizer backward was much slower on this local runtime; the delivered regularizer passes temporarily use FP32. Main training uses the model's mixed-precision configuration. No custom CUDA kernel compilation was needed.
+4. Ran real optimization on the locally available 126 original-resolution WikiArt images (one style), with a 113/6/7 diagnostic split, batch=2/microbatch=1. Verified nonzero changes to G and D weights. This small diagnostic is NOT the full 81,444-image experiment and is not a quality benchmark.
+5. Restored the full checkpoint in a new process: step20/nimg40 continued to step22/nimg44, and both Adam optimizer step counters continued to24, including two earlier regularization updates. RNG state and data offset are stored. A further resume exercised baseline reconstruction after an interrupted/missing baseline evaluation, best-checkpoint selection and sample export. Final-model eligibility requires at least one complete training-data pass; earlier candidates are separately labeled partial.
+   Continued the local diagnostic through all113 training images: step57, epoch1, offset0. This also exercised the final one-image batch and the epoch-boundary checkpoint.
+6. Completed the Ignite evaluator end to end (pool3 FID, probability-space FID and IS), plus fixed-seed sampling, loss plotting and result ZIP creation. Evaluation used only6 diagnostic validation pairs; those numbers are intentionally not presented as model-quality scores.
+7. Checked Python compilation and Bash syntax parsing; package ZIP is checked for CRC errors and excludes caches, datasets and model weights. Download/convert code and pinned upstream source are included.
+
+Meaningful limits: this validates an actual train/evaluate/resume path and the pretrained model's visible capability. It does not establish that full-data fine-tuning will improve FID or guarantee sharp output for every seed. Full-data training and final metrics remain to be run on DataHub. The public model may have seen images from the later validation/test splits. All report claims must preserve that distinction.

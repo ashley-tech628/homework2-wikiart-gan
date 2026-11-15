@@ -2,13 +2,19 @@
 
 This repository contains the completed 2,390-image, 64 × 64 baseline and the completed full-dataset, 128 × 128 training run. The two-page [Homework 2 report](homework2_wikiart_full_report.pdf) describes the full-dataset experiment and its visual limitations.
 
+## Current improvement: DataHub StyleGAN2 transfer (1024px)
+
+The new [complete pipeline](stylegan2_transfer/README.md) uses NVIDIA StyleGAN2 and explicitly attributed public WikiArt pretraining, then fine-tunes on the complete assigned source dataset. Original data/caches stay in `/tmp`; full optimizer/RNG checkpoints persist in home. Run `bash stylegan2_transfer/run_datahub.sh` on DataHub. The package includes fixed-seed pretraining previews, validation selection, Ignite metrics and resumable training. [Validation notes](stylegan2_transfer/VALIDATION.md) distinguish the executed local training/resume checks from full-data quality validation, which has not yet been run. Public pretraining may overlap the later held-out split.
+
+The existing report and result files below describe the older 128px baseline, **not this new transfer experiment**.
+
 ## Recorded full-dataset run
 
 The DataHub run processed **all 81,444 decodable paintings in 27 styles**, with no skipped files. It used a seeded split of 73,300 training and 8,144 held-out images, trained for **40 epochs / 45,800 steps**, and evaluated 1,000 real/generated pairs. Results: **Inception Score 2.4051**, **pool3 FID 177.3223**, and **Ignite blog-default FID 0.13354**. The two FID variants use different feature spaces and must not be compared numerically. The 1,000-pair FID is a finite-sample estimate.
 
 The [generated grid](results/full_datahub_generated_grid.png) shows painterly colors and textures, but repeated motifs and indistinct subjects remain; the result does not demonstrate high-fidelity painting synthesis. The [loss plot](results/full_datahub_loss_curves.png), [metrics](results/full_datahub_metrics.json), [configuration](results/full_datahub_config.json), [training losses](results/full_datahub_losses.csv), and [file-level provenance](results/full_datahub_full_provenance.json) are saved here. The experimental PyTorch checkpoint remains on DataHub; it was not included in the user's downloaded results ZIP.
 
-## Full WikiArt experiment (new)
+## Archived Kaggle full-data workflow
 
 Use [kaggle_full_wikiart_gan.ipynb](kaggle_full_wikiart_gan.ipynb) in Kaggle. Import it through **File → Import Notebook**, attach the assigned [steubk/wikiart](https://www.kaggle.com/datasets/steubk/wikiart) dataset in **Add Input**, enable a GPU and Internet in Session options, then run cells in order or choose **Save Version → Save & Run All**. This notebook contains its Python scripts, so cloning the repository inside Kaggle is unnecessary.
 

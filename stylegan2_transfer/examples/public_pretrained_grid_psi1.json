@@ -1,0 +1,25 @@
+{
+  "seeds": [
+    2026,
+    2027,
+    2028,
+    2029,
+    2030,
+    2031,
+    2032,
+    2033,
+    2034,
+    2035,
+    2036,
+    2037,
+    2038,
+    2039,
+    2040,
+    2041
+  ],
+  "truncation_psi": 1.0,
+  "noise_mode": "const",
+  "native_resolution": 1024,
+  "grid_tile_resolution": 256,
+  "postprocessing": "display resizing only; no enhancement"
+}
