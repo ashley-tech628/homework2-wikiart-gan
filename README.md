@@ -1,6 +1,12 @@
 # Homework 2 — WikiArt painting GAN
 
-This repository contains the completed 2,390-image, 64 × 64 baseline and a new full-dataset, 128 × 128 training pipeline. The full-dataset experiment has **not yet been run to completion**. The report awaits its measured results.
+This repository contains the completed 2,390-image, 64 × 64 baseline and the completed full-dataset, 128 × 128 training run. The two-page [Homework 2 report](homework2_wikiart_full_report.pdf) describes the full-dataset experiment and its visual limitations.
+
+## Recorded full-dataset run
+
+The DataHub run processed **all 81,444 decodable paintings in 27 styles**, with no skipped files. It used a seeded split of 73,300 training and 8,144 held-out images, trained for **40 epochs / 45,800 steps**, and evaluated 1,000 real/generated pairs. Results: **Inception Score 2.4051**, **pool3 FID 177.3223**, and **Ignite blog-default FID 0.13354**. The two FID variants use different feature spaces and must not be compared numerically. The 1,000-pair FID is a finite-sample estimate.
+
+The [generated grid](results/full_datahub_generated_grid.png) shows painterly colors and textures, but repeated motifs and indistinct subjects remain; the result does not demonstrate high-fidelity painting synthesis. The [loss plot](results/full_datahub_loss_curves.png), [metrics](results/full_datahub_metrics.json), [configuration](results/full_datahub_config.json), [training losses](results/full_datahub_losses.csv), and [file-level provenance](results/full_datahub_full_provenance.json) are saved here. The experimental PyTorch checkpoint remains on DataHub; it was not included in the user's downloaded results ZIP.
 
 ## Full WikiArt experiment (new)
 
