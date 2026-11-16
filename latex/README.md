@@ -1,10 +1,10 @@
 # Homework 2 report (NeurIPS 2026 LaTeX)
 
-The report is authored by Xinying Liu. The first two pages contain the paper body; references begin on page 3. The project uses the official `neurips_2026.sty` in `preprint` mode so the author name appears without claiming conference acceptance.
+The report is authored by Xinying Liu. The first two pages contain the paper body; references begin on page 3. The project uses the official `neurips_2026.sty` in `preprint` mode so the author name appears without claiming conference acceptance. `main.tex` replaces the template's first-page "Preprint." notice with the full, clickable GitHub URL.
 
 ## Files
 
-- `main.tex`: editable report text, metric table, captions, references, and a clickable GitHub repository link in the author block.
+- `main.tex`: editable report text, metric table, captions, references, and the repository URL in the first-page footer.
 - `neurips_2026.sty`: official NeurIPS 2026 style file.
 - `loss_curves.png`: chart from the recorded scratch and transfer training losses.
 - `generated_examples.pdf`: vector layout of unmodified generated sample tiles.
