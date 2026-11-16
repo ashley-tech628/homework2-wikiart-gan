@@ -1,0 +1,9 @@
+{
+  "url": "https://archive.org/download/wikiart-stylegan2-conditional-model/WikiArt_Uncond2.pkl",
+  "sha1": "48634616ab4b4408b28378b649da67a52c309ea9",
+  "author": "Peter Baylies / pbaylies",
+  "source": "WikiArt_Uncond2",
+  "native_resolution": 1024,
+  "G_initialization": "public EMA generator",
+  "dataset_overlap": "Unknown overlap with our train/validation/test split; NOT an unseen-pretraining test."
+}

@@ -1,0 +1,11 @@
+{
+  "status": "target_reached",
+  "nimg": 80003,
+  "target_nimg": 80000,
+  "epoch": 1,
+  "offset": 6704,
+  "complete_training_passes": 1,
+  "elapsed_session_hours": 1.8663214574221314,
+  "checkpoint": "/home/xil277/homework2-stylegan2-wikiart/latest.pt",
+  "all_training_images_seen": true
+}

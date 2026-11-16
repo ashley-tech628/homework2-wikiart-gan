@@ -1,0 +1,28 @@
+{
+  "fid_pool3": 55.967079572601506,
+  "fid_ignite_blog_default": 0.052317424465766704,
+  "inception_score": 7.018603613526272,
+  "real_images": 1000,
+  "generated_images": 1000,
+  "split": "test",
+  "seed": 32026,
+  "image_size": 1024,
+  "truncation_psi": 1,
+  "metric_library": "pytorch-ignite 0.5.4",
+  "features": "torchvision ImageNet Inception-v3 pool3, 2048",
+  "preprocess": "[-1,1] -> [0,1]; torchvision bilinear antialias resize 299x299; Ignite InceptionModel transform_input",
+  "dataset_fingerprint": "5e5412310e89c4b7bfcdcd650229f992f084fe68c9e6d5849ed5fcc07cb72855",
+  "limitations": "Finite-sample estimate. Public WikiArt pretraining may overlap all splits. Not evidence of unseen-pretraining generalization; do not compare with different sample counts/protocols.",
+  "nimg": 0,
+  "pretrained": {
+    "url": "https://archive.org/download/wikiart-stylegan2-conditional-model/WikiArt_Uncond2.pkl",
+    "sha1": "48634616ab4b4408b28378b649da67a52c309ea9",
+    "author": "Peter Baylies / pbaylies",
+    "source": "WikiArt_Uncond2",
+    "native_resolution": 1024,
+    "G_initialization": "public EMA generator",
+    "dataset_overlap": "Unknown overlap with our train/validation/test split; NOT an unseen-pretraining test."
+  },
+  "checkpoint": "/tmp/homework2-full-wikiart-xil277/stylegan2/pretrained/initial.pt",
+  "all_training_images_seen": false
+}

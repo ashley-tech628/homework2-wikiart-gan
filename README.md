@@ -1,12 +1,14 @@
 # Homework 2 — WikiArt painting GAN
 
-This repository contains the completed 2,390-image, 64 × 64 baseline and the completed full-dataset, 128 × 128 training run. The two-page [Homework 2 report](homework2_wikiart_full_report.pdf) describes the full-dataset experiment and its visual limitations.
+This repository contains the completed 2,390-image, 64 × 64 baseline, the completed full-dataset 128 × 128 GAN, and a completed 1024 × 1024 StyleGAN2 transfer run. The two-page [Homework 2 report](homework2_wikiart_full_report.pdf) covers the two full-dataset experiments and their limitations.
 
-## Current improvement: DataHub StyleGAN2 transfer (1024px)
+## Completed DataHub StyleGAN2 transfer (1024px)
 
-The new [complete pipeline](stylegan2_transfer/README.md) uses NVIDIA StyleGAN2 and explicitly attributed public WikiArt pretraining, then fine-tunes on the complete assigned source dataset. Original data/caches stay in `/tmp`; full optimizer/RNG checkpoints persist in home. Run `bash stylegan2_transfer/run_datahub.sh` on DataHub. The package includes fixed-seed pretraining previews, validation selection, Ignite metrics and resumable training. [Validation notes](stylegan2_transfer/VALIDATION.md) distinguish the executed local training/resume checks from full-data quality validation, which has not yet been run. Public pretraining may overlap the later held-out split.
+The [complete pipeline](stylegan2_transfer/README.md) uses NVIDIA StyleGAN2 and explicitly attributed public WikiArt pretraining, then fine-tunes on the complete assigned source dataset. Original data/caches stay in `/tmp`; full optimizer/RNG checkpoints persist in home. Run `bash stylegan2_transfer/run_datahub.sh` on DataHub. The package includes fixed-seed pretraining previews, validation selection, Ignite metrics and resumable training. [Validation notes](stylegan2_transfer/VALIDATION.md) describe local checks; the full DataHub experiment has now completed. Public pretraining may overlap the later held-out split.
 
-The existing report and result files below describe the older 128px baseline, **not this new transfer experiment**.
+The transfer run indexed **81,444 images in 27 styles**, split into 73,299 train / 4,072 validation / 4,073 test images. Training reached **80,003 kimg** and completed one full pass through its training split. Validation selected the EMA checkpoint at 79,459 kimg. Using the same 1,000-pair test protocol, the public pretrained starting model scored **pool3 FID 55.97, IS 7.019**, while the selected fine-tuned model scored **pool3 FID 58.12, IS 7.080**. Fine-tuning improved IS slightly but worsened FID. These finite-sample values do not prove improved quality or unseen-pretraining generalization.
+
+The verified [transfer results](results/stylegan2_final/) include both test metric JSON files, exact configuration and dataset manifest, training losses and plot, before/after grids, and final status. The [report source](report/make_stylegan2_report.py) regenerates the PDF with ReportLab. Checkpoints are not in the results ZIP: `best_finetuned.pt` (inference weights) and `latest.pt` (resumable optimizer state) remain in DataHub home and must be downloaded separately if needed.
 
 ## Recorded full-dataset run
 
