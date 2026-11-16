@@ -8,7 +8,7 @@ The [complete pipeline](stylegan2_transfer/README.md) uses NVIDIA StyleGAN2 and 
 
 The transfer run indexed **81,444 images in 27 styles**, split into 73,299 train / 4,072 validation / 4,073 test images. Training reached **80,003 kimg** and completed one full pass through its training split. Validation selected the EMA checkpoint at 79,459 kimg. Using the same 1,000-pair test protocol, the public pretrained starting model scored **pool3 FID 55.97, IS 7.019**, while the selected fine-tuned model scored **pool3 FID 58.12, IS 7.080**. Fine-tuning improved IS slightly but worsened FID. These finite-sample values do not prove improved quality or unseen-pretraining generalization.
 
-The verified [transfer results](results/stylegan2_final/) include both test metric JSON files, exact configuration and dataset manifest, training losses and plot, before/after grids, and final status. The [report source](report/make_stylegan2_report.py) regenerates the PDF with ReportLab. Checkpoints are not in the results ZIP: `best_finetuned.pt` (inference weights) and `latest.pt` (resumable optimizer state) remain in DataHub home and must be downloaded separately if needed.
+The verified [transfer results](results/stylegan2_final/) include both test metric JSON files, exact configuration and dataset manifest, training losses and plot, before/after grids, and final status. The two-page [report source](report/make_homework2_report.py) and [curve source](report/make_combined_losses.py) regenerate the submitted figures and PDF. Checkpoints are not in the results ZIP: `best_finetuned.pt` (inference weights) and `latest.pt` (resumable optimizer state) remain in DataHub home and must be downloaded separately if needed.
 
 ## Recorded full-dataset run
 
