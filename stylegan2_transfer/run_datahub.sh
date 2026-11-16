@@ -19,6 +19,8 @@ export TORCH_HOME="$SCRATCH/torch" MPLCONFIGDIR="$SCRATCH/mpl"
 export KAGGLEHUB_CACHE="$SCRATCH/kagglehub" HF_HOME="$SCRATCH/hf"
 export PIP_CACHE_DIR="$SCRATCH/pip" PIP_DISABLE_PIP_VERSION_CHECK=1
 export PYTHONUNBUFFERED=1 OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4
+export PYTORCH_ALLOC_CONF="${PYTORCH_ALLOC_CONF:-backend:cudaMallocAsync}"
+export TORCH_CUDNN_V8_API_LRU_CACHE_LIMIT="${TORCH_CUDNN_V8_API_LRU_CACHE_LIMIT:-128}"
 mkdir -p "$TMPDIR" "$XDG_CACHE_HOME" "$TORCH_HOME" "$MPLCONFIGDIR" "$KAGGLEHUB_CACHE"
 echo "Images/downloads/caches/env: $ROOT and $VENV (temporary)."
 echo "Durable checkpoints/results: $PERSIST (home); allow about 2 GiB for atomic saves."

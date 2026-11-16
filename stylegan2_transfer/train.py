@@ -59,7 +59,8 @@ def main():
     if resume and s['dataset_fingerprint'] != manifest['fingerprint']:
         raise ValueError('Dataset changed since the checkpoint. Refusing to resume a different experiment.')
     config = {k:str(v) if isinstance(v,Path) else v for k,v in vars(a).items()}
-    config.update(regularizer_microbatch=1,regularizer_precision='fp32',
+    config.update(regularizer_microbatch=1,
+                  regularizer_precision='Dreg native mixed precision; Greg FP32',
                   augmentation='NVIDIA ADA color subset + horizontal flip',
                   ema_half_life_kimg=10,ada_target=0.6,ada_kimg=500,
                   model='NVIDIA StyleGAN2; native 1024px; unconditional WikiArt transfer')
@@ -202,11 +203,10 @@ def main():
                 # Its expectation is unchanged; variance is higher than a full-batch estimate.
                 regularizer=phase.endswith('reg')
                 chunks=[batch[torch.randint(b,(1,)).item()].unsqueeze(0)] if regularizer else batch.split(a.microbatch)
-                # Native fp16 convolution double backward is exceptionally slow
-                # on the tested Blackwell runtime. FP32 regularizer passes use
-                # the same weights/graph and avoid this slow path.
+                # FP32 Dreg exceeded memory on a 24 GiB MIG slice after resume.
+                # Keep D's native mixed precision for R1; only Greg uses FP32.
                 precision_flags=[]
-                if regularizer:
+                if phase=='Greg':
                     for block in net.modules():
                         if hasattr(block,'use_fp16'):
                             precision_flags.append((block,block.use_fp16));block.use_fp16=False

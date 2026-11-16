@@ -81,7 +81,7 @@ DataHub 文件浏览器打开 `homework2-stylegan2-wikiart`：
 
 - 官方 StyleGAN2：调制/解调卷积、映射网络、skip RGB、残差判别器、minibatch standard deviation。
 - 公开无条件 WikiArt 1024px 模型初始化 G（使用其 EMA）及 D；保留完整网络。全部可训练权重参与微调。Adam LR=1e-4、betas=(0, .99)，按 lazy regularization 比例修正；非饱和 logistic GAN 损失；R1 gamma=10；path length weight=2；每16步正则；EMA 半衰期10kimg。
-- NVIDIA ADA 的颜色变换子集 + 水平翻转。目标 real-sign=.6、调整时间常数500kimg；不是原版全部几何 ADA 配置。为减少计算，R1 和 path-length 各用一个随机样本估计，正则期望不变、方差会更高。正则使用 FP32，其他阶段使用模型自带混合精度。
+- NVIDIA ADA 的颜色变换子集 + 水平翻转。目标 real-sign=.6、调整时间常数500kimg；不是原版全部几何 ADA 配置。为减少计算，R1 和 path-length 各用一个随机样本估计，正则期望不变、方差会更高。R1 使用模型自带混合精度以控制显存；路径长度正则使用 FP32。
 - 默认算子使用 NVIDIA 自带的 PyTorch reference 实现，**无需 nvcc 编译**，所以不依赖 DataHub 的旧 CUDA12.0 编译器。这个选择可能比正确配置的融合 CUDA 内核慢；优先保证可运行性和数值验证。上游源码、许可证、固定 commit 和修改说明都包含在 ZIP 中。
 - 严格检查原始数据 **81,444 张、27 风格目录**。固定 seed2026，90%训练，剩余一半验证、一半测试。不对训练集截取小子集；每轮按确定性顺序洗牌遍历全部训练图片。损坏文件明确报错，不偷偷跳过。所有风格共同训练一个无条件生成器，不按风格标签控制输出。
 - 验证512对用于选择 `best_finetuned.pt`，只有完整遍历训练集至少一轮的候选才有资格成为最终模型；之前另存 `best_partial.pt`。初始公开模型单独保存，不冒充“微调最好”的结果。每10kimg和每次正常退出验证一次。默认完整训练预算结束后才用测试1000对评估初始/微调模型；同数量、同种子、同缩放。
