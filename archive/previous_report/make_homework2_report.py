@@ -1,4 +1,4 @@
-"""Render the final two-page, NeurIPS-sized Homework 2 report from run artifacts.
+"""Render the superseded two-page ReportLab draft from run artifacts.
 
 The paper follows the 2026 author's US Letter text block, 10/11 pt body,
 title rules, caption order, and numbered references. It is a course report.
@@ -14,11 +14,11 @@ from reportlab.pdfgen import canvas
 from reportlab.platypus import Paragraph, Table, TableStyle
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 OLD = ROOT / "results"
 NEW = ROOT / "results" / "stylegan2_final"
-OUT = ROOT / "homework2_wikiart_full_report.pdf"
-CHART = ROOT / "report" / "homework2_combined_losses.png"
+OUT = ROOT / "archive" / "previous_report" / "old_two_page_report.pdf"
+CHART = ROOT / "archive" / "previous_report" / "homework2_combined_losses.png"
 OUT.parent.mkdir(parents=True, exist_ok=True)
 CHART.parent.mkdir(parents=True, exist_ok=True)
 

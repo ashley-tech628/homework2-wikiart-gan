@@ -4,7 +4,8 @@ __pycache__/
 data/
 *.zip
 *.pt
-!model/generator.pt
-!model/kaggle_generator.pt
-!model/kaggle_checkpoint.pt
 checkpoints/
+*.aux
+*.log
+*.out
+*.synctex.gz

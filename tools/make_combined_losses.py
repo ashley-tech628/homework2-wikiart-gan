@@ -12,7 +12,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 BASE = ROOT / "results" / "full_datahub_losses.csv"
 TRANSFER = ROOT / "results" / "stylegan2_final" / "losses.csv"
-OUT = ROOT / "report" / "homework2_combined_losses.png"
+OUT = ROOT / "latex" / "loss_curves.png"
 OUT.parent.mkdir(parents=True, exist_ok=True)
 
 

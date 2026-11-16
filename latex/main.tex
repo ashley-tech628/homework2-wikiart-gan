@@ -68,7 +68,7 @@ Relative to initialization, transfer changes test FID by $+2.15$ (worse) and IS 
 The scratch GAN learns painterly texture but weak long-range structure; transfer samples show sharper subjects. Different resolutions, conditioning, and splits prevent attributing their FID gap to any single factor. Public pretraining on WikiArt may overlap our test set, so transfer-test metrics do \emph{not} establish unseen-pretraining generalization. FID and IS are finite-sample, ImageNet-based estimates with known bias~\cite{chong}. A stronger study requires verified disjoint pretraining data, common-split ablations, and more test samples.
 
 \clearpage
-\begin{thebibliography}{10}
+\begin{thebibliography}{12}
 \raggedright
 \bibitem{goodfellow} I.~Goodfellow et al. Generative Adversarial Nets. \emph{NeurIPS}, 2014. \url{https://proceedings.neurips.cc/paper/2014/hash/f033ed80deb0234979a61f95710dbe25-Abstract.html}.
 \bibitem{wikiart} steubk. \emph{WikiArt} dataset, Kaggle. \url{https://www.kaggle.com/datasets/steubk/wikiart}.
@@ -81,6 +81,7 @@ The scratch GAN learns painterly texture but weak long-range structure; transfer
 \bibitem{salimans} T.~Salimans et al. Improved Techniques for Training GANs. \emph{NeurIPS}, 2016. \url{https://proceedings.neurips.cc/paper/2016/hash/8a3363abe792db2d8761d6403605aeb7-Abstract.html}.
 \bibitem{ignite} PyTorch-Ignite. GAN Evaluation: Fr\'echet Inception Distance and Inception Score. \url{https://pytorch-ignite.ai/blog/gan-evaluation-with-fid-and-is/}.
 \bibitem{chong} M.~J. Chong and D.~Forsyth. Effectively Unbiased FID and Inception Score and Where to Find Them. \emph{CVPR}, 2020. \url{https://openaccess.thecvf.com/content_CVPR_2020/html/Chong_Effectively_Unbiased_FID_and_Inception_Score_and_Where_to_Find_CVPR_2020_paper.html}.
+\bibitem{repo} X.~Liu. \emph{Painting Synthesis on Full WikiArt}: source code, experiment artifacts, and report. GitHub repository, 2026. \url{https://github.com/ashley-tech628/homework2-wikiart-gan}.
 \end{thebibliography}
 
 \end{document}

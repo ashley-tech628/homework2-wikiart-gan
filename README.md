@@ -1,170 +1,59 @@
-# Homework 2 — WikiArt painting GAN
+# Painting synthesis on full WikiArt
 
-This repository contains the completed 2,390-image, 64 × 64 baseline, the completed full-dataset 128 × 128 GAN, and a completed 1024 × 1024 StyleGAN2 transfer run. The [Homework 2 report](homework2_wikiart_full_report.pdf) has two pages of main text and a third page of references. Its editable [NeurIPS 2026 LaTeX source](report/latex/main.tex), official style file, and figures are in `report/latex/`.
+**Xinying Liu · ECE 285, Homework 2**
 
-## Completed DataHub StyleGAN2 transfer (1024px)
+This project studies what a GAN trained on the assigned WikiArt dataset can learn from scratch, and how much a publicly pretrained high-resolution GAN changes when fine-tuned on the same collection. The final experiments index **81,444 paintings across 27 styles**. The work includes an independently implemented conditional GAN, a separate StyleGAN2-ADA transfer experiment, recorded training curves and generated samples, and a [NeurIPS-format report](report/homework2_wikiart_report.pdf). The [editable LaTeX project](latex/main.tex) is kept outside `report/` so that folder contains only the submission PDF.
 
-The [complete pipeline](stylegan2_transfer/README.md) uses NVIDIA StyleGAN2 and explicitly attributed public WikiArt pretraining, then fine-tunes on the complete assigned source dataset. Original data/caches stay in `/tmp`; full optimizer/RNG checkpoints persist in home. Run `bash stylegan2_transfer/run_datahub.sh` on DataHub. The package includes fixed-seed pretraining previews, validation selection, Ignite metrics and resumable training. [Validation notes](stylegan2_transfer/VALIDATION.md) describe local checks; the full DataHub experiment has now completed. Public pretraining may overlap the later held-out split.
+## Results at a glance
 
-The transfer run indexed **81,444 images in 27 styles**, split into 73,299 train / 4,072 validation / 4,073 test images. Training reached **80.003 kimg (80,003 images)** and completed one full pass through its training split. Validation selected the EMA checkpoint at 79.459 kimg. Using the same 1,000-pair test protocol, the public pretrained starting model scored **pool3 FID 55.97, IS 7.019**, while the selected fine-tuned model scored **pool3 FID 58.12, IS 7.080**. Fine-tuning improved IS slightly but worsened FID. These finite-sample values do not prove improved quality or unseen-pretraining generalization.
+| Experiment | Training data | Output | Pool3 FID ↓ | Inception Score ↑ |
+| --- | ---: | ---: | ---: | ---: |
+| Conditional GAN, trained from scratch | 73,300 paintings; 40 epochs | 128 × 128 | 177.32 | 2.405 |
+| Public StyleGAN2 checkpoint, before our training | Public WikiArt pretraining | 1024 × 1024 | 55.97 | 7.019 |
+| StyleGAN2 after our full-data fine-tuning | 73,299 paintings; 80.003 kimg | 1024 × 1024 | 58.12 | 7.080 |
 
-The verified [transfer results](results/stylegan2_final/) include both test metric JSON files, exact configuration and dataset manifest, training losses and plot, before/after grids, and final status. The [LaTeX report source](report/latex/main.tex) compiles the submitted PDF; the earlier ReportLab generator remains in `report/make_homework2_report.py`. Checkpoints are not in the results ZIP: `best_finetuned.pt` (inference weights) and `latest.pt` (resumable optimizer state) remain in DataHub home and must be downloaded separately if needed.
+Each row uses **1,000 real and 1,000 generated images** for the listed metrics. The two StyleGAN2 rows share a test split, generation seed, truncation setting, and preprocessing. Fine-tuning raises IS slightly but also raises FID by 2.15 points, so these measurements do not show an unqualified improvement. The scratch model uses a different resolution, conditioning scheme, and holdout split; its FID is useful context, not a controlled comparison with StyleGAN2. The [underlying metric files](results/) also record the PyTorch-Ignite tutorial's probability-feature FID, whose scale differs from pool3 FID.
 
-## Recorded full-dataset run
+## Generated paintings
 
-The DataHub run processed **all 81,444 decodable paintings in 27 styles**, with no skipped files. It used a seeded split of 73,300 training and 8,144 held-out images, trained for **40 epochs / 45,800 steps**, and evaluated 1,000 real/generated pairs. Results: **Inception Score 2.4051**, **pool3 FID 177.3223**, and **Ignite blog-default FID 0.13354**. The two FID variants use different feature spaces and must not be compared numerically. The 1,000-pair FID is a finite-sample estimate.
+The following grids are saved directly from the experiments. The public and fine-tuned StyleGAN2 panels use the **same 16 seeds and truncation $\psi=1$**; these examples are not hand-picked replacements for the metric sample.
 
-The [generated grid](results/full_datahub_generated_grid.png) shows painterly colors and textures, but repeated motifs and indistinct subjects remain; the result does not demonstrate high-fidelity painting synthesis. The [loss plot](results/full_datahub_loss_curves.png), [metrics](results/full_datahub_metrics.json), [configuration](results/full_datahub_config.json), [training losses](results/full_datahub_losses.csv), and [file-level provenance](results/full_datahub_full_provenance.json) are saved here. The experimental PyTorch checkpoint remains on DataHub; it was not included in the user's downloaded results ZIP.
+| Public checkpoint | After fine-tuning |
+| :---: | :---: |
+| <img src="results/stylegan2_final/pretrained_before_finetuning_psi1.png" alt="Paintings from the public StyleGAN2 checkpoint" width="430"> | <img src="results/stylegan2_final/best_grid_psi1.png" alt="Paintings after fine-tuning on the full WikiArt training split" width="430"> |
 
-## Archived Kaggle full-data workflow
+The transfer model produces recognizable portraits, landscapes, and still lifes before and after fine-tuning. The visual differences are modest, consistent with its strong public starting point. The independently trained model captures color and painterly texture but frequently loses subject structure:
 
-Use [kaggle_full_wikiart_gan.ipynb](kaggle_full_wikiart_gan.ipynb) in Kaggle. Import it through **File → Import Notebook**, attach the assigned [steubk/wikiart](https://www.kaggle.com/datasets/steubk/wikiart) dataset in **Add Input**, enable a GPU and Internet in Session options, then run cells in order or choose **Save Version → Save & Run All**. This notebook contains its Python scripts, so cloning the repository inside Kaggle is unnecessary.
+<img src="results/full_datahub_generated_grid.png" alt="Generated paintings from the independent 128px conditional GAN" width="520">
 
-The new `full_wikiart/prepare.py` uses every decodable image in all 27 style folders. It center crops each source image to 128 × 128, records image-level provenance and skipped corrupt files, and verifies that at least 50,000 images were prepared. It does not randomly select a 2,390-image subset. Prepared pixels are temporary; source images remain in the attached Kaggle dataset. A seeded 90/10 split leaves real images out of training for evaluation.
+*Full generated grid from the independent 128px GAN.*
 
-`full_wikiart/train.py` trains a 128 × 128 style-conditional convolutional generator and projection discriminator with spectral normalization, hinge loss, Adam, mixed precision, and an exponential moving average (EMA) generator. It saves losses, sample grids, and a resumable checkpoint after every epoch. The default target is 40 epochs, batch size 64, latent dimension 128. The notebook stops after about eight hours of training in each session; if it stops before 40 epochs, save the version, attach that version's output to a new notebook session, and set `RESUME_CHECKPOINT` to its `run/checkpoint.pt` path. The `checkpoint_epoch` in `run/metrics.json` tells you how much training actually completed.
+![Training loss curves for the scratch GAN and StyleGAN2 transfer experiment](latex/loss_curves.png)
 
-`full_wikiart/evaluate.py` measures Inception Score and FID on up to 1,000 held-out real images and 1,000 images from the EMA generator, with matching style labels. It writes both standard pool3 FID and the Ignite blog's default FID; those two FID numbers use different feature spaces and cannot be compared numerically. The notebook packages checkpoint, metrics, losses, and generated examples in `full_run_artifacts.zip`, and saves `full_provenance.json` separately. Upload both files here after the Kaggle run so the results and image quality can be checked before writing the report.
+*Training losses across both completed runs. The objectives and vertical scales differ, so the curves should be interpreted within each model rather than compared by magnitude.*
 
-The architecture is designed to use more training data and pixels than the baseline, but visual sharpness and FID can only be assessed after training. A partial run or a 10-step smoke test is not evidence of improvement.
+## Experimental design
 
-## Recorded run
+The scratch experiment uses a style-conditional convolutional generator and a spectrally normalized projection discriminator, optimized with a hinge adversarial loss. It completes 40 epochs and 45,800 updates at 128 × 128 resolution. The transfer experiment uses NVIDIA's unconditional StyleGAN2-ADA architecture initialized from [Peter Baylies's public WikiArt checkpoint](https://archive.org/details/wikiart-stylegan2-conditional-model). It trains at native 1024 × 1024 resolution, with R1 and path-length regularization, adaptive augmentation, and an exponential moving average of generator weights. The selected fine-tuned checkpoint is at 79.459 kimg; the run reaches 80.003 kimg and completes one traversal of its training partition.
 
-| Item | Value |
+The scratch run holds out 8,144 images. The transfer run has 4,072 validation and 4,073 test images; validation guides checkpoint selection, while the final before/after metrics use the test partition. Both FID variants and IS use the [PyTorch-Ignite evaluation approach](https://pytorch-ignite.ai/blog/gan-evaluation-with-fid-and-is/) with Inception-v3 and antialiased resizing to 299 × 299. Exact configurations, losses, split manifest, and metric JSON files accompany the figures in [`results/`](results/).
+
+## Repository guide
+
+| Path | Contents |
 | --- | --- |
-| Images | 2,390 WikiArt paintings: 126 from the [assigned Kaggle upload](https://www.kaggle.com/datasets/steubk/wikiart), 2,264 from the [HugGAN WikiArt mirror](https://huggingface.co/datasets/huggan/wikiart) |
-| Split | 1,912 train / 478 held out; seeded random split |
-| Image resolution | RGB, center crop to 64 × 64, scaled to [-1, 1] |
-| Model | Upsampling convolutional generator; spectral-normalized convolutional discriminator |
-| Objective | Hinge GAN loss, one generator and one discriminator update per batch |
-| Optimization | Adam, G learning rate 2e-4, D learning rate 1e-4, betas (0, 0.9) |
-| Training | 40 epochs, batch size 64, latent dimension 100, seed 2026 |
-| Hardware | NVIDIA RTX 5070 Laptop GPU (8 GB); PyTorch 2.10.0 + CUDA 13.0 |
-| Evaluation | 400 generated images against 400 held-out real images, Inception-v3 at 299 × 299 |
-| IS | **1.5704** (higher is better) |
-| FID, pool3 features | **152.99** (lower is better) |
-| FID, Ignite blog default | **0.0820** (lower is better; 1,000-class probability features, a different scale from pool3 FID) |
+| [`report/`](report/) | Final PDF only: two pages of main text, references beginning on page three. |
+| [`latex/`](latex/) | Editable `main.tex`, official NeurIPS 2026 style file, and figure assets. |
+| [`full_wikiart/`](full_wikiart/) | Independent 128 × 128 conditional GAN: data preparation, model, training, evaluation, sampling. |
+| [`stylegan2_transfer/`](stylegan2_transfer/) | Pretrained 1024 × 1024 experiment and [DataHub execution guide](stylegan2_transfer/RUNNING.md). |
+| [`results/`](results/) | Recorded outputs for the two full-data experiments. |
+| [`archive/`](archive/) | Earlier 64 × 64 trials, Kaggle notebooks, and the superseded report generator. |
+| [`tools/`](tools/) | Figure-generation utility for the combined loss plot. |
 
-The Kaggle per-file endpoint returned persistent 404 responses after 126 downloads. We used a public WikiArt mirror to complete this run and recorded image-level provenance in `results/provenance.json`. The mirror is not asserted to be byte-identical to the assigned Kaggle version. This limits direct comparison to experiments using that exact upload.
-
-The separate DataHub run completed 40 epochs and evaluated 400 held-out images: pool3 FID **147.3517**, Ignite blog-default FID **0.08746**, and IS **1.53699**. Its metrics were copied from the user's terminal output into `results/datahub_metrics.json`; the remaining DataHub artifacts must be downloaded from DataHub before they can be included in this repository.
-
-The Kaggle run on the assigned `steubk/wikiart` upload prepared a seeded 2,390-image subset and completed 40 epochs on a Tesla T4. Its 400-image held-out evaluation returned pool3 FID **158.5913**, Ignite blog-default FID **0.12410**, and IS **1.71503**. The downloaded executed notebook is `kaggle_completed.ipynb`; its figures, metrics, loss CSV, config, image-level provenance, generated images, model weights, and full checkpoint are archived separately in `results/kaggle_*` and `model/kaggle_*`. The ZIP archive was CRC-checked; all 2,390 provenance entries are unique, the loss CSV records 1,160 steps across 40 epochs, and both weight files load with PyTorch's restricted weights loader (the full checkpoint requires allowlisting its `TorchVersion` metadata type).
-
-## Repository contents
-
-- `gan.py`: generator, discriminator, and initialization.
-- `download_wikiart.py`: seeded, style-balanced download from the assigned Kaggle dataset.
-- `prepare_mirror.py`: extract a public WikiArt mirror into the training directory, with provenance.
-- `train.py`: training loop, fixed-noise sample grids, losses, checkpoint.
-- `evaluate.py`: IS and FID using [PyTorch-Ignite's GAN evaluation approach](https://pytorch-ignite.ai/blog/gan-evaluation-with-fid-and-is/).
-- `sample.py`: generate new paintings from `model/generator.pt`.
-- `plot_losses.py`: make the training-loss figure.
-- `prepare_kaggle_subset.py`: prepare a seeded subset from the attached Kaggle WikiArt upload.
-- `kaggle_homework2.ipynb`: self-contained Kaggle notebook with the project code embedded.
-- `results/`: recorded metrics, config, losses, sample grid, plot, provenance.
-
-## Run on Kaggle with the assigned dataset
-
-The [Kaggle notebook](kaggle_homework2.ipynb) embeds all required Python scripts, so the repository does not need to be cloned inside Kaggle. Create a new Kaggle Notebook and import `kaggle_homework2.ipynb` through the editor's **File > Import Notebook** command. In the **Input** pane, attach [steubk/wikiart](https://www.kaggle.com/datasets/steubk/wikiart). In **Session options**, select a GPU accelerator and enable Internet. Run the notebook from the first cell, or choose **Save Version > Save & Run All** for a saved version with outputs.
-
-The notebook randomly selects 2,390 decodable images from the mounted Kaggle dataset using seed 2026, writes image-level provenance to `data/images/kaggle_provenance.json`, trains for 40 epochs, evaluates 400 held-out images, and writes the generator, metrics, sample grids, losses, and figures under `/kaggle/working/homework2-wikiart-gan/`. This is a new run on the assigned source; its metrics should be recorded separately from the mixed-source local and DataHub runs. Kaggle saves `/kaggle/working` output files with a completed notebook version. The notebook checks CUDA before starting and installs only Ignite if needed, leaving the preinstalled GPU-enabled PyTorch in place.
-
-Before training, the notebook downloads and caches the Inception-v3 evaluation weights. This gives a clear early error when Kaggle Internet is disabled; it does not affect the GAN training weights.
-
-Kaggle may mount datasets under `/kaggle/input/datasets/<owner>/<dataset>/...`. The preparation script searches recursively for the `Abstract_Expressionism` style directory, so it works with this deeper mount layout.
-
-On DataHub, the 40-epoch run currently lives in `/tmp/homework2-run`. Copy the model weights and final artifacts into the persistent project directory before the container ends, then download an archive from JupyterLab:
-
-```bash
-cd ~/homework2-wikiart-gan
-source /tmp/homework2-venv/bin/activate
-mkdir -p model results
-python - <<'PY'
-import torch
-from pathlib import Path
-s = torch.load('/tmp/homework2-run/checkpoint.pt', map_location='cpu', weights_only=False)
-torch.save({'generator': s['generator'], 'latent_dim': s['config']['latent_dim'],
-            'width': s['config']['width'], 'epoch': s['epoch']},
-           Path('model/datahub_generator.pt'))
-PY
-cp /tmp/homework2-run/metrics.json results/datahub_metrics.json
-cp /tmp/homework2-run/config.json results/datahub_config.json
-cp /tmp/homework2-run/losses.csv results/datahub_losses.csv
-cp /tmp/homework2-run/loss_curves.png results/datahub_loss_curves.png
-cp /tmp/homework2-run/samples_epoch_40.png results/datahub_generated_grid.png
-python -m zipfile -c datahub-results.zip results/datahub_metrics.json results/datahub_config.json results/datahub_losses.csv results/datahub_loss_curves.png results/datahub_generated_grid.png model/datahub_generator.pt
-```
-
-## Run locally
-
-Python 3.13 is recommended for `pytorch-ignite==0.5.4`. For an NVIDIA GPU, install the CUDA build of PyTorch appropriate for the host using the [official selector](https://pytorch.org/get-started/locally/), then install the remaining requirements. The recorded Windows run used a Python 3.14 environment with `pip --ignore-requires-python` for Ignite; its functions were validated in that environment.
-
-```bash
-python -m venv .venv
-source .venv/bin/activate                    # Windows: .venv\Scripts\activate
-python -m pip install -r requirements.txt
-```
-
-### UCSD DataHub
-
-UCSD's `scipy-ml-notebook` GPU image already provides CUDA and PyTorch. **Do not install the full `requirements.txt` into DataHub's home directory:** that can download another multi-gigabyte CUDA/PyTorch stack and exhaust the course storage quota. After unpacking the supplied DataHub ZIP, first check the existing environment:
-
-```bash
-python -c "import torch, torchvision, scipy, matplotlib, PIL; print(torch.__version__, torch.cuda.is_available())"
-```
-
-`torch.cuda.is_available()` only confirms that a GPU is visible. Before a full run, verify that PyTorch actually has kernels for the allocated card:
-
-```bash
-python -c "import torch; print(torch.__version__, torch.version.cuda, torch.cuda.get_arch_list()); print(torch.ones(1, device='cuda'))"
-```
-
-The Fall 2026 UCSD image observed on an RTX PRO 6000 Blackwell (`sm_120`) had PyTorch 2.2.1 + CUDA 12.1 and failed this kernel check. That image can run on an older compatible GPU, but [Blackwell requires a newer PyTorch CUDA build](https://discuss.pytorch.org/t/rtx-5050-sm-120-support-timeline-when-in-stable-pytorch/224288/4) (at least PyTorch 2.7 with CUDA 12.8). A compatible build should be installed in a temporary environment or supplied by an updated image; the older system installation should not be replaced in the quota-limited home directory.
-
-If the CUDA operation succeeds, install only Ignite if it is missing:
-
-```bash
-python -c "import ignite; print(ignite.__version__)" || python -m pip install --user --no-cache-dir --no-deps pytorch-ignite==0.5.4
-```
-
-The supplied DataHub ZIP includes the 2,390 prepared images at `data/images`, so no data download or `pyarrow` install is needed for that run. If an import fails, inspect the installed package versions and paths before replacing the platform's GPU-enabled PyTorch.
-
-To use the assigned Kaggle source directly:
-
-```bash
-python download_wikiart.py --output data/wikiart --per-style 500 \
-  --styles Abstract_Expressionism Baroque Impressionism
-```
-
-If the Kaggle endpoint is unavailable, download the first two shards of the [HugGAN mirror](https://huggingface.co/datasets/huggan/wikiart/tree/main/data), install `pyarrow`, and prepare images:
-
-```bash
-python -m pip install pyarrow
-mkdir -p data/shards
-curl -L --fail -o data/shards/train-00000.parquet https://huggingface.co/datasets/huggan/wikiart/resolve/main/data/train-00000-of-00072.parquet
-curl -L --fail -o data/shards/train-00001.parquet https://huggingface.co/datasets/huggan/wikiart/resolve/main/data/train-00001-of-00072.parquet
-python prepare_mirror.py --shards data/shards/train-00000.parquet data/shards/train-00001.parquet --output data/images
-```
-
-To reproduce the recorded **mixed-source** run, add `--kaggle-dir data/wikiart` to `prepare_mirror.py` after downloading the Kaggle files. The exact Kaggle filenames used in this run appear in `results/provenance.json`; its mirrored portion will be the same if the two pinned shard paths remain unchanged.
-
-```bash
-python train.py --data data/images --output run --epochs 40 --batch-size 64 --workers 4
-python evaluate.py --checkpoint run/checkpoint.pt --data data/images --output run/metrics.json --max-images 400
-python plot_losses.py --losses run/losses.csv --output run/loss_curves.png
-python sample.py --model model/generator.pt --output run/new_paintings.png --seed 1234
-```
-
-`TORCH_HOME` may be set to a writable directory before evaluation to control where the pretrained Inception-v3 weights are cached. Training images and optimizer checkpoints are excluded from Git; the 9.5 MB generator file is included for immediate sampling.
+The current report and figures use the **full-data experiments**. The earlier 2,390-image trials are preserved under `archive/` for provenance and are not presented as full-dataset results.
 
 ## Interpretation
 
-The generated samples show painterly colors and scene-like shapes, but objects are indistinct and the results lean toward Impressionist textures. IS measures ImageNet class confidence/diversity, which is imperfect for paintings. Pool3 FID and the blog-default Ignite FID use different feature representations and must not be compared numerically. The 400-image evaluation is a small-sample estimate, not a benchmark on the full WikiArt dataset.
+The public checkpoint was itself trained on WikiArt, and its original image list is not available here. It may overlap with paintings in this project's validation or test split. Consequently, the transfer scores describe this run but **cannot establish generalization to images unseen during public pretraining**. FID and IS are finite-sample estimates based on an ImageNet classifier; they are imperfect measures of painting quality and diversity. The report discusses these limits alongside the quantitative and visual evidence.
 
-## References
-
-1. [Radford, Metz, and Chintala, DCGAN](https://arxiv.org/abs/1511.06434).
-2. [Miyato et al., Spectral Normalization for GANs](https://arxiv.org/abs/1802.05957).
-3. [Heusel et al., FID and two time-scale GAN training](https://proceedings.neurips.cc/paper/2017/hash/8a1d694707eb0fefe65871369074926d-Abstract.html).
-4. [PyTorch-Ignite, GAN evaluation with FID and IS](https://pytorch-ignite.ai/blog/gan-evaluation-with-fid-and-is/).
+For exact reproduction details, see the [full-data model notes](full_wikiart/README.md), [transfer model notes](stylegan2_transfer/README.md), and the [DataHub guide](stylegan2_transfer/RUNNING.md). The 1024px public weights are credited in [`stylegan2_transfer/UPSTREAM.json`](stylegan2_transfer/UPSTREAM.json).
