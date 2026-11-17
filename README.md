@@ -48,7 +48,7 @@ The scratch run holds out 8,144 images. The transfer run has 4,072 validation an
 | [`stylegan2_transfer/`](stylegan2_transfer/) | Pretrained 1024 × 1024 experiment and [DataHub execution guide](stylegan2_transfer/RUNNING.md). |
 | [`results/`](results/) | Recorded outputs for the two full-data experiments. |
 | [`archive/`](archive/) | Earlier 64 × 64 trials, Kaggle notebooks, and the superseded report generator. |
-| [`tools/`](tools/) | Figure-generation utility for the combined loss plot. |
+| [`tools/`](tools/) | Reproducible utilities for the loss plot and generated-example figure. |
 
 The current report and figures use the **full-data experiments**. The earlier 2,390-image trials are preserved under `archive/` for provenance and are not presented as full-dataset results.
 

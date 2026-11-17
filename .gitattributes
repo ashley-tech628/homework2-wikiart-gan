@@ -1,4 +1,4 @@
-*.pdf -text
-*.png -text
-*.pt -text
+*.pdf -text -diff
+*.png -text -diff
+*.pt -text -diff
 *.sh text eol=lf

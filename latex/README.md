@@ -7,7 +7,7 @@ The report is authored by Xinying Liu. The first two pages contain the paper bod
 - `main.tex`: editable report text, metric table, captions, references, and the repository URL in the first-page footer.
 - `neurips_2026.sty`: official NeurIPS 2026 style file.
 - `loss_curves.png`: chart from the recorded scratch and transfer training losses.
-- `generated_examples.pdf`: vector layout of unmodified generated sample tiles.
+- `generated_examples.pdf`: vector layout of 18 fixed, unmodified generated sample tiles (six per model), made by [`../tools/make_generated_examples.py`](../tools/make_generated_examples.py).
 
 ## Overleaf
 
