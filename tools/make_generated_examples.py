@@ -15,8 +15,9 @@ RESULTS = ROOT / "results"
 TRANSFER = RESULTS / "stylegan2_final"
 OUT = ROOT / "latex" / "generated_examples.pdf"
 
-WIDTH, HEIGHT = 396, 190
-TILE, GAP, IMAGE_LEFT = 52, 1.5, 72
+WIDTH, HEIGHT = 396, 210
+TILE, GAP = 47, 1.5
+IMAGE_LEFT = (WIDTH - 8 * TILE - 7 * GAP) / 2
 
 
 def draw_tile(pdf, path: Path, grid_size: int, row: int, col: int,
@@ -39,29 +40,28 @@ def draw_tile(pdf, path: Path, grid_size: int, row: int, col: int,
 def main() -> None:
     OUT.parent.mkdir(parents=True, exist_ok=True)
     pdf = canvas.Canvas(str(OUT), pagesize=(WIDTH, HEIGHT), pageCompression=1)
-    pdf.setTitle("Eighteen fixed painting samples from three GAN checkpoints")
+    pdf.setTitle("Twenty-four fixed painting samples from three GAN checkpoints")
     rows = [
-        (["From scratch", "128px"], RESULTS / "full_datahub_generated_grid.png", 8,
-         [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4), (6, 6)]),
-        (["Public pretrained", "1024px"], TRANSFER / "pretrained_before_finetuning_psi1.png", 4,
-         [(0, 0), (0, 1), (0, 2), (0, 3), (1, 0), (1, 1)]),
-        (["Fine-tuned", "1024px"], TRANSFER / "best_grid_psi1.png", 4,
-         [(0, 0), (0, 1), (0, 2), (0, 3), (1, 0), (1, 1)]),
+        ("From scratch (128px)", RESULTS / "full_datahub_generated_grid.png", 8,
+         [(i, i) for i in range(8)]),
+        ("Public pretrained (1024px)", TRANSFER / "pretrained_before_finetuning_psi1.png", 4,
+         [(row, col) for row in range(2) for col in range(4)]),
+        ("Fine-tuned (1024px)", TRANSFER / "best_grid_psi1.png", 4,
+         [(row, col) for row in range(2) for col in range(4)]),
     ]
 
     y = HEIGHT - 8
-    for label_lines, source, grid_size, positions in rows:
+    for label, source, grid_size, positions in rows:
         if not source.is_file():
             raise FileNotFoundError(source)
         pdf.setFont("Times-Bold", 8)
-        for k, label in enumerate(label_lines):
-            pdf.drawString(5, y - 20 - 10 * k, label)
-        bottom = y - TILE
+        pdf.drawString(IMAGE_LEFT, y, label)
+        bottom = y - 6 - TILE
         for j, (row, col) in enumerate(positions):
             draw_tile(pdf, source, grid_size, row, col,
                       IMAGE_LEFT + j * (TILE + GAP), bottom)
-        y = bottom - 8
-    if y <= 0 or IMAGE_LEFT + 6 * TILE + 5 * GAP > WIDTH:
+        y = bottom - 10
+    if y <= 0 or IMAGE_LEFT + 8 * TILE + 7 * GAP > WIDTH:
         raise RuntimeError("Figure exceeds its page box")
     pdf.save()
     print(OUT)
